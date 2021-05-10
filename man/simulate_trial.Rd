@@ -107,7 +107,7 @@ For every patient, there is a cohort_random probability that a new cohort will b
 but cohorts will finish evaluating, unless other stopping rules reached prior. Default is FALSE.}
 
 \item{target_rr}{What is target to declare a combo a positive? Vector of length 3 giving 1) the threshold by which
-the combo needs to be better than the monos and 2) the threhsold by which the monos need to be better than the placebo.
+the combo needs to be better than the monos and 2) the threshold by which the monos need to be better than the placebo.
 The third element of the vector specifies the relation, choices are 1=="risk-difference", 2=="risk-ratio" and 3=="odds-ratio".
 By default: c(0,0, "risk-difference").}
 
@@ -123,7 +123,7 @@ By default: c(0,0, "risk-difference").}
 List containing: Responses and patients on experimental and control arm, total treatment successes and failures and final p-value
 }
 \description{
-Simulates the cohort trial.
+Disclaimer: EU-PEARL (EU Patient-cEntric clinicAl tRial pLatforms) project has received funding from the Innovative Medicines Initiative (IMI) 2 Joint Undertaking (JU) under grant agreement No 853966. This Joint Undertaking receives support from the European Unions Horizon 2020 research and innovation program and EFPIA and Childrens Tumor Foundation, Global Alliance for TB Drug Development non-profit organization, Springworks Therapeutics Inc. This publication reflects the authors views. Neither IMI nor the European Union, EFPIA, or any Associated Partners are responsible for any use that may be made of the information contained herein. The research of Elias Laurin Meyer was funded until 11/2020 by Novartis through the University and not at an individual level.
 }
 \examples{
 
