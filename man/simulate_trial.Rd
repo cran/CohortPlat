@@ -107,7 +107,7 @@ For every patient, there is a cohort_random probability that a new cohort will b
 but cohorts will finish evaluating, unless other stopping rules reached prior. Default is FALSE.}
 
 \item{target_rr}{What is target to declare a combo a positive? Vector of length 3 giving 1) the threshold by which
-the combo needs to be better than the monos and 2) the threshold by which the monos need to be better than the placebo.
+the combo needs to be better than the monos and 2) the threhsold by which the monos need to be better than the placebo.
 The third element of the vector specifies the relation, choices are 1=="risk-difference", 2=="risk-ratio" and 3=="odds-ratio".
 By default: c(0,0, "risk-difference").}
 
@@ -123,7 +123,7 @@ By default: c(0,0, "risk-difference").}
 List containing: Responses and patients on experimental and control arm, total treatment successes and failures and final p-value
 }
 \description{
-Disclaimer: EU-PEARL (EU Patient-cEntric clinicAl tRial pLatforms) project has received funding from the Innovative Medicines Initiative (IMI) 2 Joint Undertaking (JU) under grant agreement No 853966. This Joint Undertaking receives support from the European Unions Horizon 2020 research and innovation program and EFPIA and Childrens Tumor Foundation, Global Alliance for TB Drug Development non-profit organization, Springworks Therapeutics Inc. This publication reflects the authors views. Neither IMI nor the European Union, EFPIA, or any Associated Partners are responsible for any use that may be made of the information contained herein. The research of Elias Laurin Meyer was funded until 11/2020 by Novartis through the University and not at an individual level.
+Simulates the cohort trial.
 }
 \examples{
 
@@ -138,6 +138,11 @@ prob_back_rr <- c(0.3, 0.4, 0.3)
 rr_plac <- c(0.10, 0.12, 0.14)
 prob_plac_rr <- c(0.25, 0.5, 0.25)
 
+rr_transform <- list(
+  function(x) {return(c(0.75*(1 - x), (1-0.75)*(1-x), (1-0.75)*x, 0.75*x))},
+  function(x) {return(c(0.85*(1 - x), (1-0.85)*(1-x), (1-0.85)*x, 0.85*x))}
+)
+prob_rr_transform <- c(0.5, 0.5)
 
 cohorts_max <- 4
 trial_struc <- "stop_post_back"
@@ -175,5 +180,29 @@ Bayes_Sup4[3,] <- c(NA, NA, NA)
 Bayes_Sup <- list(list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4),
              list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
 
+# Vergleich Combo vs Mono
+Bayes_Fut1 <- matrix(nrow = 1, ncol = 2)
+Bayes_Fut1[1,] <- c(0.00, 0.60)
+# Vergleich Combo vs Backbone
+Bayes_Fut2 <- matrix(nrow = 1, ncol = 2)
+Bayes_Fut2[1,] <- c(0.00, 0.60)
+# Vergleich Mono vs Placebo
+Bayes_Fut3 <- matrix(nrow = 1, ncol = 2)
+Bayes_Fut3[1,] <- c(0.00, 0.60)
+Bayes_Fut4 <- matrix(nrow = 1, ncol = 2)
+Bayes_Fut4[1,] <- c(0.00, 0.60)
+Bayes_Fut <- list(list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4),
+                  list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4))
+
+a <- simulate_trial(
+n_int = n_int, n_fin = n_fin, trial_struc = trial_struc, random_type = random_type,
+rr_comb = rr_comb, rr_mono = rr_mono, rr_back = rr_back, rr_plac = rr_plac,
+rr_transform = rr_transform, random = random, prob_comb_rr = prob_comb_rr,
+prob_mono_rr = prob_mono_rr, prob_back_rr = prob_back_rr, prob_plac_rr = prob_plac_rr,
+stage_data = stage_data, cohort_random = cohort_random, cohorts_max = cohorts_max,
+sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, sharing_type = sharing_type,
+safety_prob = safety_prob, Bayes_Sup = Bayes_Sup, prob_rr_transform = prob_rr_transform,
+cohort_offset = cohort_offset, sr_first_pos = sr_first_pos, Bayes_Fut = Bayes_Fut
+)
 
 }

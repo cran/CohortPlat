@@ -11,9 +11,6 @@ plot_trial(res_list, unit = "cohort")
 
 \item{unit}{What is unit of observation in response rate plots: N_cohort or N_total?}
 }
-\value{
-Trial overview plotly graph.
-}
 \description{
 Given a res_list object, plots things like final study design, indicating which arms were discontinued after how many patients etc..
 }
@@ -21,68 +18,59 @@ Given a res_list object, plots things like final study design, indicating which 
 
 random <- TRUE
 
-rr_comb <- c(0.25, 0.35, 0.4)
-prob_comb_rr <- c(0.4, 0.4, 0.2)
-rr_mono <- c(0.15, 0.20, 0.25)
-prob_mono_rr <- c(0.2, 0.4, 0.4)
-rr_back <- c(0.20, 0.25, 0.30)
-prob_back_rr <- c(0.3, 0.4, 0.3)
-rr_plac <- c(0.10, 0.12, 0.14)
-prob_plac_rr <- c(0.25, 0.5, 0.25)
+rr_comb <- c(1)
+prob_comb_rr <- c(1)
+rr_mono <- c(1,2)
+prob_mono_rr <- c(0.5, 0.5)
+rr_back <- c(2)
+prob_back_rr <- c(1)
+rr_plac <- c(0.10)
+prob_plac_rr <- c(1)
 
 rr_transform <- list(
-  function(x) {return(c(0.75*(1 - x), (1-0.75)*(1-x), (1-0.75)*x, 0.75*x))},
-  function(x) {return(c(0.85*(1 - x), (1-0.85)*(1-x), (1-0.85)*x, 0.85*x))}
+  function(x) {return(c(0.90*(1 - x), (1-0.90)*(1-x), (1-0.90)*x, 0.90*x))}
 )
-prob_rr_transform <- c(0.5, 0.5)
+prob_rr_transform <- c(1)
 
-cohorts_max <- 4
-trial_struc <- "no_plac"
+cohorts_max <- 7
+trial_struc <- "all_plac"
 safety_prob <- 0
-sharing_type <- "concurrent"
-sr_drugs_pos <- 1
-n_int <- 50
-n_fin <- 100
+sharing_type <- "dynamic"
+sr_drugs_pos <- 7
+n_int <- 100
+n_fin <- 200
 stage_data <- TRUE
-cohort_random <- 0.05
+cohort_random <- 0.03
 target_rr <- c(0,0,1)
-cohort_offset <- 5
-random_type <- "risk_difference"
+cohort_offset <- 0
+random_type <- "risk_ratio"
 sr_first_pos <- TRUE
 
 # Vergleich Combo vs Mono
-Bayes_Sup1 <- matrix(nrow = 3, ncol = 3)
+Bayes_Sup1 <- matrix(nrow = 1, ncol = 3)
 Bayes_Sup1[1,] <- c(0.00, 0.90, 1.00)
-Bayes_Sup1[2,] <- c(0.05, 0.65, 1.00)
-Bayes_Sup1[3,] <- c(0.10, 0.50, 1.00)
 # Vergleich Combo vs Backbone
-Bayes_Sup2 <- matrix(nrow = 3, ncol = 3)
-Bayes_Sup2[1,] <- c(0.05, 0.80, 1.00)
-Bayes_Sup2[2,] <- c(NA, NA, NA)
-Bayes_Sup2[3,] <- c(NA, NA, NA)
+Bayes_Sup2 <- matrix(nrow = 1, ncol = 3)
+Bayes_Sup2[1,] <- c(0.00, 0.90, 1.00)
 # Vergleich Mono vs Placebo
-Bayes_Sup3 <- matrix(nrow = 3, ncol = 3)
-Bayes_Sup3[1,] <- c(0.00, 0.90, 1.00)
-Bayes_Sup3[2,] <- c(0.05, 0.65, 1.00)
-Bayes_Sup3[3,] <- c(NA, NA, NA)
-Bayes_Sup4 <- matrix(nrow = 3, ncol = 3)
-Bayes_Sup4[1,] <- c(0.00, 0.90, 1.00)
-Bayes_Sup4[2,] <- c(0.05, 0.65, 1.00)
-Bayes_Sup4[3,] <- c(NA, NA, NA)
+Bayes_Sup3 <- matrix(nrow = 1, ncol = 3)
+Bayes_Sup3[1,] <- c(0.00, 0.80, 1.00)
+Bayes_Sup4 <- matrix(nrow = 1, ncol = 3)
+Bayes_Sup4[1,] <- c(0.00, 0.80, 1.00)
 Bayes_Sup <- list(list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4),
              list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
 
 # Vergleich Combo vs Mono
 Bayes_Fut1 <- matrix(nrow = 1, ncol = 2)
-Bayes_Fut1[1,] <- c(NA, NA)
+Bayes_Fut1[1,] <- c(0.00, 0.50)
 # Vergleich Combo vs Backbone
 Bayes_Fut2 <- matrix(nrow = 1, ncol = 2)
-Bayes_Fut2[1,] <- c(NA, NA)
+Bayes_Fut2[1,] <- c(0.00, 0.50)
 # Vergleich Mono vs Placebo
 Bayes_Fut3 <- matrix(nrow = 1, ncol = 2)
-Bayes_Fut3[1,] <- c(0.00, 0.60)
+Bayes_Fut3[1,] <- c(0.00, 0.50)
 Bayes_Fut4 <- matrix(nrow = 1, ncol = 2)
-Bayes_Fut4[1,] <- c(0.00, 0.60)
+Bayes_Fut4[1,] <- c(0.00, 0.50)
 Bayes_Fut <- list(list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4),
                   list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4))
 
@@ -97,7 +85,6 @@ safety_prob = safety_prob, Bayes_Sup = Bayes_Sup, prob_rr_transform = prob_rr_tr
 cohort_offset = cohort_offset, Bayes_Fut = Bayes_Fut, sr_first_pos = sr_first_pos
 )
 
-plot_trial(res_list)
 plot_trial(res_list, unit = "n")
 
 }

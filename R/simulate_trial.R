@@ -1,7 +1,5 @@
 #' Simulates the cohort trial.
 #'
-#' Disclaimer: EU-PEARL (EU Patient-cEntric clinicAl tRial pLatforms) project has received funding from the Innovative Medicines Initiative (IMI) 2 Joint Undertaking (JU) under grant agreement No 853966. This Joint Undertaking receives support from the European Unions Horizon 2020 research and innovation program and EFPIA and Childrens Tumor Foundation, Global Alliance for TB Drug Development non-profit organization, Springworks Therapeutics Inc. This publication reflects the authors views. Neither IMI nor the European Union, EFPIA, or any Associated Partners are responsible for any use that may be made of the information contained herein. The research of Elias Laurin Meyer was funded until 11/2020 by Novartis through the University and not at an individual level.
-#'
 #' @param n_int                Sample size per cohort to conduct interim analysis
 #'
 #' @param n_fin                Sample size per cohort at final
@@ -76,7 +74,7 @@
 #'                             but cohorts will finish evaluating, unless other stopping rules reached prior. Default is FALSE.
 #'
 #' @param target_rr            What is target to declare a combo a positive? Vector of length 3 giving 1) the threshold by which
-#'                             the combo needs to be better than the monos and 2) the threshold by which the monos need to be better than the placebo.
+#'                             the combo needs to be better than the monos and 2) the threhsold by which the monos need to be better than the placebo.
 #'                             The third element of the vector specifies the relation, choices are 1=="risk-difference", 2=="risk-ratio" and 3=="odds-ratio".
 #'                             By default: c(0,0, "risk-difference").
 #'
@@ -101,11 +99,11 @@
 #' rr_plac <- c(0.10, 0.12, 0.14)
 #' prob_plac_rr <- c(0.25, 0.5, 0.25)
 #'
-# rr_transform <- list(
-#   function(x) {return(c(0.75*(1 - x), (1-0.75)*(1-x), (1-0.75)*x, 0.75*x))},
-#   function(x) {return(c(0.85*(1 - x), (1-0.85)*(1-x), (1-0.85)*x, 0.85*x))}
-# )
-# prob_rr_transform <- c(0.5, 0.5)
+#' rr_transform <- list(
+#'   function(x) {return(c(0.75*(1 - x), (1-0.75)*(1-x), (1-0.75)*x, 0.75*x))},
+#'   function(x) {return(c(0.85*(1 - x), (1-0.85)*(1-x), (1-0.85)*x, 0.85*x))}
+#' )
+#' prob_rr_transform <- c(0.5, 0.5)
 #'
 #' cohorts_max <- 4
 #' trial_struc <- "stop_post_back"
@@ -143,16 +141,30 @@
 #' Bayes_Sup <- list(list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4),
 #'              list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
 #'
-# simulate_trial(
-# n_int = n_int, n_fin = n_fin, trial_struc = trial_struc, random_type = random_type,
-# rr_comb = rr_comb, rr_mono = rr_mono, rr_back = rr_back, rr_plac = rr_plac,
-# rr_transform = rr_transform, random = random, prob_comb_rr = prob_comb_rr,
-# prob_mono_rr = prob_mono_rr, prob_back_rr = prob_back_rr, prob_plac_rr = prob_plac_rr,
-# stage_data = stage_data, cohort_random = cohort_random, cohorts_max = cohorts_max,
-# sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, sharing_type = sharing_type,
-# safety_prob = safety_prob, Bayes_Sup = Bayes_Sup, prob_rr_transform = prob_rr_transform,
-# cohort_offset = cohort_offset, sr_first_pos = sr_first_pos
-# )
+#' # Vergleich Combo vs Mono
+#' Bayes_Fut1 <- matrix(nrow = 1, ncol = 2)
+#' Bayes_Fut1[1,] <- c(0.00, 0.60)
+#' # Vergleich Combo vs Backbone
+#' Bayes_Fut2 <- matrix(nrow = 1, ncol = 2)
+#' Bayes_Fut2[1,] <- c(0.00, 0.60)
+#' # Vergleich Mono vs Placebo
+#' Bayes_Fut3 <- matrix(nrow = 1, ncol = 2)
+#' Bayes_Fut3[1,] <- c(0.00, 0.60)
+#' Bayes_Fut4 <- matrix(nrow = 1, ncol = 2)
+#' Bayes_Fut4[1,] <- c(0.00, 0.60)
+#' Bayes_Fut <- list(list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4),
+#'                   list(Bayes_Fut1, Bayes_Fut2, Bayes_Fut3, Bayes_Fut4))
+#'
+#' a <- simulate_trial(
+#' n_int = n_int, n_fin = n_fin, trial_struc = trial_struc, random_type = random_type,
+#' rr_comb = rr_comb, rr_mono = rr_mono, rr_back = rr_back, rr_plac = rr_plac,
+#' rr_transform = rr_transform, random = random, prob_comb_rr = prob_comb_rr,
+#' prob_mono_rr = prob_mono_rr, prob_back_rr = prob_back_rr, prob_plac_rr = prob_plac_rr,
+#' stage_data = stage_data, cohort_random = cohort_random, cohorts_max = cohorts_max,
+#' sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, sharing_type = sharing_type,
+#' safety_prob = safety_prob, Bayes_Sup = Bayes_Sup, prob_rr_transform = prob_rr_transform,
+#' cohort_offset = cohort_offset, sr_first_pos = sr_first_pos, Bayes_Fut = Bayes_Fut
+#' )
 #'
 #' @export
 simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, rr_mono, rr_back, rr_plac,
@@ -243,7 +255,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       new_list <- list(c(list(decision = rep("none", 2),
                               alloc_ratio = c(1,1,1,1),
                               n_thresh = n_thresh_vec,
-                              start_n = sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+                              start_n = sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
       ),
       rep(list(list(rr = NULL,
                     resp_bio = rep(NA, length(res_list[[1]][[5]]$n)),
@@ -262,7 +274,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       new_list <- list(c(list(decision = rep("none", 2),
                               alloc_ratio = c(1,1,1),
                               n_thresh = n_thresh_vec,
-                              start_n = sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+                              start_n = sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
       ),
       rep(list(list(rr = NULL,
                     resp_bio = rep(NA, length(res_list[[1]][[5]]$n)),
@@ -295,7 +307,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     res <- matrix(nrow = 4, ncol = length(res_list))
     for (i in 1:length(res_list)) {
       for (j in 1:length(res_list[[i]]$alloc_ratio)) {
-        res[j, i] <- sum(res_list[[i]][[j+4]]$n, na.rm = TRUE)
+        res[j, i] <- sum(res_list[[i]][[j+4]]$n, na.rm = T)
       }
     }
     rownames(res) <- c("Combo", "Mono", "Backbone", "Placebo")
@@ -312,7 +324,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       ret <- 1
     }
     if (sr_pats < expected) {
-      if (sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE) > sr_pats) {
+      if (sum(sapply(res_list, function(x) total_n(x)), na.rm = T) > sr_pats) {
         ret <- 1
       }
     }
@@ -323,26 +335,26 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
   # helper functions to compute sample sizes
   total_n <- function(x) {
   if ("Plac" %in% names(x)) {
-    sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$n), na.rm = TRUE)
+    sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$n), na.rm = T)
   } else {
-    sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$n), na.rm = TRUE)
+    sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$n), na.rm = T)
   }
   }
 
 
   total_rb <- function(x) {
     if ("Plac" %in% names(x)) {
-      sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$resp_bio), na.rm = TRUE)
+      sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$resp_bio), na.rm = T)
     } else {
-      sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$resp_bio), na.rm = TRUE)
+      sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$resp_bio), na.rm = T)
     }
   }
 
   total_rh <- function(x) {
     if ("Plac" %in% names(x)) {
-      sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$resp_hist), na.rm = TRUE)
+      sum(sapply(x[c("Comb", "Back", "Mono", "Plac")], function(y) y$resp_hist), na.rm = T)
     } else {
-      sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$resp_hist), na.rm = TRUE)
+      sum(sapply(x[c("Comb", "Back", "Mono")], function(y) y$resp_hist), na.rm = T)
     }
   }
 
@@ -351,10 +363,10 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
   update_alloc_ratio <- function(res_list) {
 
     cohorts_left <- which(sapply(res_list, function(x) coh_left_check(x)))
-    comb_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Comb", na.rm = TRUE)
-    back_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Back", na.rm = TRUE)
-    mono_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Mono", na.rm = TRUE)
-    plac_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Plac", na.rm = TRUE)
+    comb_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Comb", na.rm = T)
+    back_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Back", na.rm = T)
+    mono_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Mono", na.rm = T)
+    plac_numb <- sum(sapply(res_list[cohorts_left], function(x) names(x)[5:8]) == "Plac", na.rm = T)
 
     for (i in cohorts_left) {
       if (length(res_list[[i]]$alloc_ratio) == 3) {
@@ -571,7 +583,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       if (safety) {
         if (res_list[[i]]$decision[1] == "none")  {res_list[[i]]$decision[1] <- "STOP_SAFETY"}
         res_list[[i]]$decision[2] <- "STOP_SAFETY"
-        res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+        res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
         res_list[[i]]$sup_final <- FALSE
         res_list[[i]]$final_n_cohort <- total_n(res_list[[i]])
         if(is.null(res_list[[i]]$interim_n)) {res_list[[i]]$interim_n <- NA}
@@ -582,7 +594,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     }
 
 
-    if (sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE) > (cohorts_max * (n_fin + 3 * cohorts_max))) {
+    if (sum(sapply(res_list, function(x) total_n(x)), na.rm = T) > (cohorts_max * (n_fin + 3 * cohorts_max))) {
       stop("Total Sample Size is greater than should be possible with settings")
     }
 
@@ -599,8 +611,8 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     if (length(ind_int) > 0) {
       for (i in ind_int) {
         res_list <- make_decision_trial(res_list, which_cohort = i, interim = TRUE, sharing_type = sharing_type, ...)
-        res_list[[i]]$interim_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
-        res_list[[i]]$interim_n_cohort <- sum(total_n(res_list[[i]]), na.rm = TRUE)
+        res_list[[i]]$interim_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
+        res_list[[i]]$interim_n_cohort <- sum(total_n(res_list[[i]]), na.rm = T)
 
         # What happens at successful interim
         if (res_list[[i]]$decision[1] == "GO_SUP") {
@@ -643,7 +655,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     if (length(ind_fin) > 0) {
       for (i in ind_fin) {
         res_list <- make_decision_trial(res_list, which_cohort = i, interim = FALSE, sharing_type = sharing_type, ...)
-        res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+        res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
         res_list[[i]]$final_n_cohort <- total_n(res_list[[i]])
         res_list[[i]]$n_thresh <- c(Inf, Inf)
       }
@@ -663,7 +675,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       ind_stop_sup <- which(sapply(res_list, function(x) x$decision[2]) %in% c("none", "PROMISING", "CONTINUE"))
       for (j in ind_stop_sup) {
         res_list[[j]]$decision[2] <- "STOP_SR"
-        res_list[[j]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+        res_list[[j]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
         res_list[[j]]$final_n_cohort <- total_n(res_list[[j]])
         res_list[[j]]$sup_final <- FALSE
 
@@ -722,7 +734,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
                         } else {
                           mat_result <- res_list[[i]]$sup_interim_list[[1]]
                         }
-                        success_mono <- apply(mat_result, MARGIN = 2, function(x) all(x, na.rm = TRUE))[3:4]
+                        success_mono <- apply(mat_result, MARGIN = 2, function(x) all(x, na.rm = T))[3:4]
                         if (any(success_mono)) {
                           mono_suc <- 1
                         }
@@ -756,7 +768,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
                         } else {
                           mat_result <- res_list[[i]]$sup_interim_list[[1]]
                         }
-                        success_back <- apply(mat_result, MARGIN = 2, function(x) all(x, na.rm = TRUE))[3]
+                        success_back <- apply(mat_result, MARGIN = 2, function(x) all(x, na.rm = T))[3]
                         if (success_back) {
                           back_suc <- 1
                         }
@@ -795,7 +807,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     }
 
     # Get total Sample Size until now
-    Total_N_Vector <- c(Total_N_Vector, sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE))
+    Total_N_Vector <- c(Total_N_Vector, sum(sapply(res_list, function(x) total_n(x)), na.rm = T))
 
   }
 
@@ -814,7 +826,7 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
       res_list[[i]]$interim_n_cohort <- NA
       res_list[[i]]$sup_interim <- NA
       res_list[[i]]$fut_interim <- NA
-      res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+      res_list[[i]]$final_n <- sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
       res_list[[i]]$final_n_cohort <- NA
       res_list[[i]]$sup_final <- NA
       res_list[[i]]$fut_final <- NA
@@ -922,27 +934,27 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
 
   comb_pats <- sapply(res_list, function(x) x$Comb$n)
   if (length(comb_pats) == 1) {comb_pats <- as.matrix(comb_pats)}
-  comb_pat_sup_th <- sum(comb_pats[, which(c > p)], na.rm = TRUE)
-  comb_pat_sup_real <- sum(comb_pats[, which(c[1:length(p_real)] > p_real)], na.rm = TRUE)
+  comb_pat_sup_th <- sum(comb_pats[, which(c > p)], na.rm = T)
+  comb_pat_sup_real <- sum(comb_pats[, which(c[1:length(p_real)] > p_real)], na.rm = T)
 
   mono_pats <- sapply(res_list, function(x) x$Mono$n)
   if (length(mono_pats) == 1) {mono_pats <- as.matrix(mono_pats)}
-  mono_pat_sup_th <- sum(mono_pats[, which(m > p)], na.rm = TRUE)
-  mono_pat_sup_real <- sum(mono_pats[, which(m[1:length(p_real)] > p_real)], na.rm = TRUE)
+  mono_pat_sup_th <- sum(mono_pats[, which(m > p)], na.rm = T)
+  mono_pat_sup_real <- sum(mono_pats[, which(m[1:length(p_real)] > p_real)], na.rm = T)
 
   back_pats <- sapply(res_list, function(x) x$Back$n)
   if (length(back_pats) == 1) {back_pats <- as.matrix(back_pats)}
-  back_pat_sup_th <- sum(back_pats[, which(b > p)], na.rm = TRUE)
-  back_pat_sup_real <- sum(back_pats[, which(b[1:length(p_real)] > p_real)], na.rm = TRUE)
+  back_pat_sup_th <- sum(back_pats[, which(b > p)], na.rm = T)
+  back_pat_sup_real <- sum(back_pats[, which(b[1:length(p_real)] > p_real)], na.rm = T)
 
-  perc_n_sup_th <- (comb_pat_sup_th + mono_pat_sup_th + back_pat_sup_th) / sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE)
+  perc_n_sup_th <- (comb_pat_sup_th + mono_pat_sup_th + back_pat_sup_th) / sum(sapply(res_list, function(x) total_n(x)), na.rm = T)
 
   if (trial_struc != "no_plac") {
     could_have_been_randomised <-
-      sum(sapply(res_list[1:length(p_real)], function(x) x$Plac$n), na.rm = TRUE) +
-      sum(sapply(res_list[1:length(p_real)], function(x) x$Comb$n), na.rm = TRUE) +
-      sum(sapply(res_list[1:length(p_real)], function(x) x$Mono$n), na.rm = TRUE) +
-      sum(sapply(res_list[1:length(p_real)], function(x) x$Back$n), na.rm = TRUE)
+      sum(sapply(res_list[1:length(p_real)], function(x) x$Plac$n), na.rm = T) +
+      sum(sapply(res_list[1:length(p_real)], function(x) x$Comb$n), na.rm = T) +
+      sum(sapply(res_list[1:length(p_real)], function(x) x$Mono$n), na.rm = T) +
+      sum(sapply(res_list[1:length(p_real)], function(x) x$Back$n), na.rm = T)
     perc_n_sup_real <- (comb_pat_sup_real + mono_pat_sup_real + back_pat_sup_real) / could_have_been_randomised
   } else {
     could_have_been_randomised <- 0
@@ -954,15 +966,15 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
 
   if (first_success > 0) {
 
-  comb_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Comb$n[1:first_success], na.rm = TRUE)), na.rm = TRUE)
-  mono_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Mono$n[1:first_success], na.rm = TRUE)), na.rm = TRUE)
-  back_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Back$n[1:first_success], na.rm = TRUE)), na.rm = TRUE)
-  plac_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Plac$n[1:first_success], na.rm = TRUE)), na.rm = TRUE)
+  comb_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Comb$n[1:first_success], na.rm = T)), na.rm = T)
+  mono_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Mono$n[1:first_success], na.rm = T)), na.rm = T)
+  back_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Back$n[1:first_success], na.rm = T)), na.rm = T)
+  plac_pats_to_first_success <- sum(sapply(res_list, function(x) sum(x$Plac$n[1:first_success], na.rm = T)), na.rm = T)
 
   df <- sapply(res_list, function(x) x$Comb$n[1:first_success])
   # get number of columns that are not exclusivly NAs
   if (!is.null(ncol(df))) {
-    cohorts_to_first_success <- ncol(df) - length(which(colSums(df, na.rm = TRUE) == 0))
+    cohorts_to_first_success <- ncol(df) - length(which(colSums(df, na.rm = T) == 0))
   } else {
     cohorts_to_first_success <- 1
   }
@@ -994,31 +1006,40 @@ simulate_trial <- function(n_int = 50, n_fin = 100, cohorts_start = 1, rr_comb, 
     N_Cohorts_First_Suc    = cohorts_to_first_success,
     Total_N_Vector         = Total_N_Vector,
     Final_N_Cohort         = final_n_cohort(res_list),
-    Total_N                = sum(sapply(res_list, function(x) total_n(x)), na.rm = TRUE),
+    Total_N                = sum(sapply(res_list, function(x) total_n(x)), na.rm = T),
     Total_N_First_Suc      = comb_pats_to_first_success + back_pats_to_first_success + mono_pats_to_first_success + plac_pats_to_first_success,
     Perc_N_Sup_Plac_Th     = perc_n_sup_th,
     Perc_N_Sup_Plac_Real   = perc_n_sup_real,
-    Total_N_Comb           = sum(sapply(res_list, function(x) sum(x$Comb$n, na.rm = TRUE)), na.rm = TRUE),
-    Total_N_Mono           = sum(sapply(res_list, function(x) sum(x$Mono$n, na.rm = TRUE)), na.rm = TRUE),
-    Total_N_Back           = sum(sapply(res_list, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE),
-    Total_N_Plac           = sum(sapply(res_list, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE),
+    Total_N_Comb           = sum(sapply(res_list, function(x) sum(x$Comb$n, na.rm = T)), na.rm = T),
+    Total_N_Mono           = sum(sapply(res_list, function(x) sum(x$Mono$n, na.rm = T)), na.rm = T),
+    Total_N_Back           = sum(sapply(res_list, function(x) sum(x$Back$n, na.rm = T)), na.rm = T),
+    Total_N_Plac           = sum(sapply(res_list, function(x) sum(x$Plac$n, na.rm = T)), na.rm = T),
     Total_N_Plac_First_Suc = plac_pats_to_first_success,
     Total_N_Plac_Pool      = could_have_been_randomised,
-    Successes_Hist         = sum(sapply(res_list, function(x) total_rh(x)), na.rm = TRUE),
-    Successes_Hist_Comb    = sum(sapply(res_list, function(x) sum(x$Comb$resp_hist, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Hist_Mono    = sum(sapply(res_list, function(x) sum(x$Mono$resp_hist, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Hist_Back    = sum(sapply(res_list, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Hist_Plac    = sum(sapply(res_list, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Bio          = sum(sapply(res_list, function(x) total_rb(x)), na.rm = TRUE),
-    Successes_Bio_Comb     = sum(sapply(res_list, function(x) sum(x$Comb$resp_bio, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Bio_Mono     = sum(sapply(res_list, function(x) sum(x$Mono$resp_bio, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Bio_Back     = sum(sapply(res_list, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE),
-    Successes_Bio_Plac     = sum(sapply(res_list, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE),
+    Successes_Hist         = sum(sapply(res_list, function(x) total_rh(x)), na.rm = T),
+    Successes_Hist_Comb    = sum(sapply(res_list, function(x) sum(x$Comb$resp_hist, na.rm = T)), na.rm = T),
+    Successes_Hist_Mono    = sum(sapply(res_list, function(x) sum(x$Mono$resp_hist, na.rm = T)), na.rm = T),
+    Successes_Hist_Back    = sum(sapply(res_list, function(x) sum(x$Back$resp_hist, na.rm = T)), na.rm = T),
+    Successes_Hist_Plac    = sum(sapply(res_list, function(x) sum(x$Plac$resp_hist, na.rm = T)), na.rm = T),
+    Successes_Bio          = sum(sapply(res_list, function(x) total_rb(x)), na.rm = T),
+    Successes_Bio_Comb     = sum(sapply(res_list, function(x) sum(x$Comb$resp_bio, na.rm = T)), na.rm = T),
+    Successes_Bio_Mono     = sum(sapply(res_list, function(x) sum(x$Mono$resp_bio, na.rm = T)), na.rm = T),
+    Successes_Bio_Back     = sum(sapply(res_list, function(x) sum(x$Back$resp_bio, na.rm = T)), na.rm = T),
+    Successes_Bio_Plac     = sum(sapply(res_list, function(x) sum(x$Plac$resp_bio, na.rm = T)), na.rm = T),
     TP                     = cp,
     FP                     = fp,
     TN                     = cn,
     FN                     = fn,
-    any_P                  = as.numeric((cp + fp) > 0)
+    FDR_Trial              = ifelse(!is.na(fp/(cp + fp)), fp/(cp + fp), NA),
+    PTP_Trial              = ifelse(!is.na(cp/(cp + fn)), cp/(cp + fn), NA),
+    PTT1ER_Trial           = ifelse(!is.na(fp/(fp + cn)), fp/(fp + cn), NA),
+    any_P                  = as.numeric((cp + fp) > 0),
+    Int_GO                 = sum(sapply(res_list, function(x) x$sup_interim), na.rm = TRUE),
+    Int_STOP               = sum(sapply(res_list, function(x) x$fut_interim), na.rm = TRUE),
+    Safety_STOP            = sum(sapply(res_list, function(x) (x$decision[2] == "STOP_SAFETY")), na.rm = TRUE),
+    Int_GO_Trial           = sum(sapply(res_list, function(x) x$sup_interim), na.rm = TRUE) / length(res_list),
+    Int_STOP_Trial         = sum(sapply(res_list, function(x) x$fut_interim), na.rm = TRUE) / length(res_list),
+    Safety_STOP_Trial      = sum(sapply(res_list, function(x) (x$decision[2] == "STOP_SAFETY")), na.rm = TRUE) / length(res_list)
     )
 
   if (stage_data) {

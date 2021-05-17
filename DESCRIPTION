@@ -1,7 +1,7 @@
 Package: CohortPlat
 Type: Package
 Title: Simulation of Cohort Platform Trials for Combination Treatments
-Version: 1.0.1
+Version: 1.0.3
 Author: Elias Laurin Meyer [aut, cre]
 Maintainer: Elias Laurin Meyer <elias.meyer@meduniwien.ac.at>
 Description: A collection of functions dedicated to simulating staggered entry platform 
@@ -20,6 +20,6 @@ Imports: dplyr, purrr, ggplot2, plotly, tidyr, parallel, doParallel,
 Suggests: knitr, rmarkdown, DT, gtools
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-05-10 09:58:40 UTC; Elias
+Packaged: 2021-05-17 10:02:55 UTC; Elias
 Repository: CRAN
-Date/Publication: 2021-05-10 10:12:12 UTC
+Date/Publication: 2021-05-17 10:50:03 UTC

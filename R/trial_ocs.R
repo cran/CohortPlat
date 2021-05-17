@@ -127,7 +127,8 @@ trial_ocs <- function(iter, coresnum = 1, save = FALSE, path = NULL, filename = 
     }
     # end parallel
     doParallel::stopImplicitCluster()
-    closeAllConnections()
+    # closeAllConnections()
+    parallel::stopCluster(cl)
 
   } else {
 
