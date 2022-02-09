@@ -31,6 +31,7 @@ simulate_trial(
   cohort_offset = 0,
   sharing_type = "all",
   safety_prob = 0,
+  cohort_fixed = NULL,
   ...
 )
 }
@@ -117,6 +118,8 @@ By default: c(0,0, "risk-difference").}
 
 \item{safety_prob}{Probability for a safety stop after every patient}
 
+\item{cohort_fixed}{If not NULL, fixed timesteps after which a cohort will be included}
+
 \item{...}{Further arguments to be passed to decision function, such as decision making criteria}
 }
 \value{
@@ -144,19 +147,20 @@ rr_transform <- list(
 )
 prob_rr_transform <- c(0.5, 0.5)
 
-cohorts_max <- 4
+cohorts_max <- 5
 trial_struc <- "stop_post_back"
 safety_prob <- 0
 sharing_type <- "concurrent"
-sr_drugs_pos <- 4
-sr_first_pos <- TRUE
+sr_drugs_pos <- 5
+sr_first_pos <- FALSE
 n_int <- 50
 n_fin <- 100
 stage_data <- TRUE
-cohort_random <- 0.05
+cohort_random <- NULL
 target_rr <- c(0,0,1)
-cohort_offset <- 5
+cohort_offset <- 0
 random_type <- "risk_difference"
+cohort_fixed <- 5
 
 # Vergleich Combo vs Mono
 Bayes_Sup1 <- matrix(nrow = 3, ncol = 3)
@@ -202,7 +206,8 @@ prob_mono_rr = prob_mono_rr, prob_back_rr = prob_back_rr, prob_plac_rr = prob_pl
 stage_data = stage_data, cohort_random = cohort_random, cohorts_max = cohorts_max,
 sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, sharing_type = sharing_type,
 safety_prob = safety_prob, Bayes_Sup = Bayes_Sup, prob_rr_transform = prob_rr_transform,
-cohort_offset = cohort_offset, sr_first_pos = sr_first_pos, Bayes_Fut = Bayes_Fut
+cohort_offset = cohort_offset, sr_first_pos = sr_first_pos, Bayes_Fut = Bayes_Fut,
+cohort_fixed = cohort_fixed
 )
 
 }

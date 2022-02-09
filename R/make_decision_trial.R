@@ -98,13 +98,16 @@
 #'                   list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
 #'
 #' sharing_type <- "all"
-#' interim <- FALSE
+#' interim <- TRUE
 #' which_cohort <- 1
+#' missing_prob <- 0.5
+#' seed_missing <- 100
 #'
 #' make_decision_trial(
 #' res_list = res_list, which_cohort = which_cohort,
-#' interim = interim,
-#' Bayes_Sup = Bayes_Sup, sharing_type = sharing_type
+#' interim = interim, missing_prob = missing_prob,
+#' Bayes_Sup = Bayes_Sup, sharing_type = sharing_type,
+#' seed_missing = seed_missing,
 #' )
 #'
 #' # Multiple decision rules
@@ -314,56 +317,74 @@ make_decision_trial <- function(res_list, which_cohort, test_strat = 3, sharing_
   # Get responders and sample sizes
   resp_bio_tot <- resp_hist_tot <- n_tot <- NULL
 
+  # Use temp dataset for number of responses and sample sizes (to allow for missing values)
+
+  res_temp <- res_list
+
   # Combo
-  resp_bio_tot[1] <- sum(res_list[[which_cohort]]$Comb$resp_bio, na.rm = TRUE)
-  resp_hist_tot[1] <- sum(res_list[[which_cohort]]$Comb$resp_hist, na.rm = TRUE)
-  n_tot[1] <- sum(res_list[[which_cohort]]$Comb$n, na.rm = TRUE)
+  if (interim) {
+    resp_bio_tot[1] <- sum(res_temp[[which_cohort]]$Comb$resp_bio, na.rm = TRUE)
+    n_tot[1] <- sum(res_temp[[which_cohort]]$Comb$n, na.rm = TRUE)
+  } else {
+    resp_hist_tot[1] <- sum(res_temp[[which_cohort]]$Comb$resp_hist, na.rm = TRUE)
+    n_tot[1] <- sum(res_temp[[which_cohort]]$Comb$n, na.rm = TRUE)
+  }
 
   # Mono
-  resp_bio_tot[2] <- sum(res_list[[which_cohort]]$Mono$resp_bio, na.rm = TRUE)
-  resp_hist_tot[2] <- sum(res_list[[which_cohort]]$Mono$resp_hist, na.rm = TRUE)
-  n_tot[2] <- sum(res_list[[which_cohort]]$Mono$n, na.rm = TRUE)
+  if (interim) {
+    resp_bio_tot[2] <- sum(res_temp[[which_cohort]]$Mono$resp_bio, na.rm = TRUE)
+    n_tot[2] <- sum(res_temp[[which_cohort]]$Mono$n, na.rm = TRUE)
+  } else {
+    resp_hist_tot[2] <- sum(res_temp[[which_cohort]]$Mono$resp_hist, na.rm = TRUE)
+    n_tot[2] <- sum(res_temp[[which_cohort]]$Mono$n, na.rm = TRUE)
+  }
 
   # Plac
-  if (length(res_list[[which_cohort]]$alloc_ratio) == 4) {
+  if (length(res_temp[[which_cohort]]$alloc_ratio) == 4) {
 
     if (sharing_type == "cohort") {
-      resp_bio_tot[4] <- sum(res_list[[which_cohort]]$Plac$resp_bio, na.rm = TRUE)
-      resp_hist_tot[4] <- sum(res_list[[which_cohort]]$Plac$resp_hist, na.rm = TRUE)
-      n_tot[4] <- sum(res_list[[which_cohort]]$Plac$n, na.rm = TRUE)
+      if (interim) {
+        resp_bio_tot[4] <- sum(res_temp[[which_cohort]]$Plac$resp_bio, na.rm = TRUE)
+        n_tot[4] <- sum(res_temp[[which_cohort]]$Plac$n, na.rm = TRUE)
+      } else {
+        resp_hist_tot[4] <- sum(res_temp[[which_cohort]]$Plac$resp_hist, na.rm = TRUE)
+        n_tot[4] <- sum(res_temp[[which_cohort]]$Plac$n, na.rm = TRUE)
+      }
     }
 
     if (sharing_type == "all") {
-      resp_bio_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE)
-      resp_hist_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE)
-      n_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE)
+      if (interim) {
+        resp_bio_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE)
+        n_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE)
+      } else {
+        resp_hist_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE)
+        n_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE)
+      }
     }
 
     if (sharing_type == "concurrent") {
-      conc <- which(!is.na(res_list[[which_cohort]]$Plac$n))
-      resp_bio_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_bio[conc], na.rm = TRUE)), na.rm = TRUE)
-      resp_hist_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_hist[conc], na.rm = TRUE)), na.rm = TRUE)
-      n_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$n[conc], na.rm = TRUE)), na.rm = TRUE)
+      conc <- which(!is.na(res_temp[[which_cohort]]$Plac$n))
+      if (interim) {
+        resp_bio_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_bio[conc], na.rm = TRUE)), na.rm = TRUE)
+        n_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$n[conc], na.rm = TRUE)), na.rm = TRUE)
+      } else {
+        resp_hist_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_hist[conc], na.rm = TRUE)), na.rm = TRUE)
+        n_tot[4] <- sum(sapply(res_temp, function(x) sum(x$Plac$n[conc], na.rm = TRUE)), na.rm = TRUE)
+      }
     }
 
     if (sharing_type == "dynamic") {
-      # if all are concurrent, no borrowing needed
-      if (all(!is.na(res_list[[which_cohort]]$Plac$n))) {
-        resp_bio_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE)
-        resp_hist_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE)
-        n_tot[4] <- sum(sapply(res_list, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE)
-      } else {
-        # do borrowing
 
+      # do borrowing
+
+      if (interim) {
         # compute responders from cohort
-        suc_bio_c <- sum(res_list[[which_cohort]]$Plac$resp_bio, na.rm = TRUE)
-        suc_hist_c <- sum(res_list[[which_cohort]]$Plac$resp_hist, na.rm = TRUE)
-        N_c <- sum(res_list[[which_cohort]]$Plac$n, na.rm = TRUE)
+        suc_bio_c <- sum(res_temp[[which_cohort]]$Plac$resp_bio, na.rm = TRUE)
+        N_c <- sum(res_temp[[which_cohort]]$Plac$n, na.rm = TRUE)
 
         # compute historical responders
-        suc_bio_h <- sum(sapply(res_list, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE) - suc_bio_c
-        suc_hist_h <- sum(sapply(res_list, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE) - suc_hist_c
-        N_h <- sum(sapply(res_list, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE) - N_c
+        suc_bio_h <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_bio, na.rm = TRUE)), na.rm = TRUE) - suc_bio_c
+        N_h <- sum(sapply(res_temp, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE) - N_c
 
         w1_bio <- w * beta(suc_bio_c + suc_bio_h + beta_prior, N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) /
           beta(suc_bio_h + beta_prior, N_h - suc_bio_h + beta_prior)
@@ -371,21 +392,33 @@ make_decision_trial <- function(res_list, which_cohort, test_strat = 3, sharing_
         w1n_bio <- w1_bio / (w1_bio + w2_bio)
         w2n_bio <- w2_bio / (w1_bio + w2_bio)
 
+        m_a_bio <- w1n_bio * (suc_bio_c + suc_bio_h + beta_prior) + w2n_bio * (suc_bio_c + beta_prior)
+        m_b_bio <- w1n_bio * (N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) + w2n_bio * (N_c - suc_bio_c + beta_prior)
+
+        n_tot[4] <- round(m_a_bio + m_b_bio)
+        resp_bio_tot[4] <- round(m_a_bio)
+
+      } else {
+
+        suc_hist_c <- sum(res_temp[[which_cohort]]$Plac$resp_hist, na.rm = TRUE)
+        N_c <- sum(res_temp[[which_cohort]]$Plac$n, na.rm = TRUE)
+
+        # compute historical responders
+        suc_hist_h <- sum(sapply(res_temp, function(x) sum(x$Plac$resp_hist, na.rm = TRUE)), na.rm = TRUE) - suc_hist_c
+        N_h <- sum(sapply(res_temp, function(x) sum(x$Plac$n, na.rm = TRUE)), na.rm = TRUE) - N_c
+
         w1_hist <- w * beta(suc_hist_c + suc_hist_h + beta_prior, N_h + N_c - suc_hist_c - suc_hist_h + beta_prior) /
           beta(suc_hist_h + beta_prior, N_h - suc_hist_h + beta_prior)
         w2_hist <- (1 - w) * beta(suc_hist_c + beta_prior, N_c - suc_hist_c + beta_prior) / beta(beta_prior, beta_prior)
         w1n_hist <- w1_hist / (w1_hist + w2_hist)
         w2n_hist <- w2_hist / (w1_hist + w2_hist)
 
-        m_a_bio <- w1n_bio * (suc_bio_c + suc_bio_h + beta_prior) + w2n_bio * (suc_bio_c + beta_prior)
-        m_b_bio <- w1n_bio * (N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) + w2n_bio * (N_c - suc_bio_c + beta_prior)
-
         m_a_hist <- w1n_hist * (suc_hist_c + suc_hist_h + beta_prior) + w2n_hist * (suc_hist_c + beta_prior)
         m_b_hist <- w1n_hist * (N_h + N_c - suc_hist_c - suc_hist_h + beta_prior) + w2n_hist * (N_c - suc_hist_c + beta_prior)
 
-        n_tot[4] <- round((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)
-        resp_bio_tot[4] <- round(m_a_bio * ((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)/(m_a_bio + m_b_bio))
-        resp_hist_tot[4] <- round(m_a_hist * ((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)/(m_a_hist + m_b_hist))
+        n_tot[4] <- round(m_a_hist + m_b_hist)
+        resp_hist_tot[4] <- round(m_a_hist)
+
       }
     }
   }
@@ -393,42 +426,50 @@ make_decision_trial <- function(res_list, which_cohort, test_strat = 3, sharing_
   # separately for backbone
 
   if (sharing_type == "cohort") {
-    resp_bio_tot[3] <- sum(res_list[[which_cohort]]$Back$resp_bio, na.rm = TRUE)
-    resp_hist_tot[3] <- sum(res_list[[which_cohort]]$Back$resp_hist, na.rm = TRUE)
-    n_tot[3] <- sum(res_list[[which_cohort]]$Back$n, na.rm = TRUE)
+    if (interim) {
+      resp_bio_tot[3] <- sum(res_temp[[which_cohort]]$Back$resp_bio, na.rm = TRUE)
+      n_tot[3] <- sum(res_temp[[which_cohort]]$Back$n, na.rm = TRUE)
+    } else {
+      resp_hist_tot[3] <- sum(res_temp[[which_cohort]]$Back$resp_hist, na.rm = TRUE)
+      n_tot[3] <- sum(res_temp[[which_cohort]]$Back$n, na.rm = TRUE)
+    }
+
   }
 
   if (sharing_type == "all") {
-    resp_bio_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE)
-    resp_hist_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE)
-    n_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE)
+    if (interim) {
+      resp_bio_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE)
+      n_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE)
+    } else {
+      resp_hist_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE)
+      n_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE)
+    }
   }
 
   if (sharing_type == "concurrent") {
-    conc <- which(!is.na(res_list[[which_cohort]]$Back$n))
-    resp_bio_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_bio[conc], na.rm = TRUE)), na.rm = TRUE)
-    resp_hist_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_hist[conc], na.rm = TRUE)), na.rm = TRUE)
-    n_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$n[conc], na.rm = TRUE)), na.rm = TRUE)
+    conc <- which(!is.na(res_temp[[which_cohort]]$Back$n))
+    if (interim) {
+      resp_bio_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$resp_bio[conc], na.rm = TRUE)), na.rm = TRUE)
+      n_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$n[conc], na.rm = TRUE)), na.rm = TRUE)
+    } else {
+      resp_hist_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$resp_hist[conc], na.rm = TRUE)), na.rm = TRUE)
+      n_tot[3] <- sum(sapply(res_temp, function(x) sum(x$Back$n[conc], na.rm = TRUE)), na.rm = TRUE)
+    }
+
   }
 
   if (sharing_type == "dynamic") {
-    # if all are concurrent, no borrowing needed
-    if (all(!is.na(res_list[[which_cohort]]$Back$n))) {
-      resp_bio_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE)
-      resp_hist_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE)
-      n_tot[3] <- sum(sapply(res_list, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE)
-    } else {
-      # do borrowing
 
+    # do borrowing
+
+    if (interim) {
       # compute responders from cohort
-      suc_bio_c <- sum(res_list[[which_cohort]]$Back$resp_bio, na.rm = TRUE)
-      suc_hist_c <- sum(res_list[[which_cohort]]$Back$resp_hist, na.rm = TRUE)
-      N_c <- sum(res_list[[which_cohort]]$Back$n, na.rm = TRUE)
+      suc_bio_c <- sum(res_temp[[which_cohort]]$Back$resp_bio, na.rm = TRUE)
+      N_c <- sum(res_temp[[which_cohort]]$Back$n, na.rm = TRUE)
 
       # compute historical responders
-      suc_bio_h <- sum(sapply(res_list, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE) - suc_bio_c
-      suc_hist_h <- sum(sapply(res_list, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE) - suc_hist_c
-      N_h <- sum(sapply(res_list, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE) - N_c
+      suc_bio_h <- sum(sapply(res_temp, function(x) sum(x$Back$resp_bio, na.rm = TRUE)), na.rm = TRUE) - suc_bio_c
+      N_h <- sum(sapply(res_temp, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE) - N_c
 
       w1_bio <- w * beta(suc_bio_c + suc_bio_h + beta_prior, N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) /
         beta(suc_bio_h + beta_prior, N_h - suc_bio_h + beta_prior)
@@ -436,21 +477,33 @@ make_decision_trial <- function(res_list, which_cohort, test_strat = 3, sharing_
       w1n_bio <- w1_bio / (w1_bio + w2_bio)
       w2n_bio <- w2_bio / (w1_bio + w2_bio)
 
+      m_a_bio <- w1n_bio * (suc_bio_c + suc_bio_h + beta_prior) + w2n_bio * (suc_bio_c + beta_prior)
+      m_b_bio <- w1n_bio * (N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) + w2n_bio * (N_c - suc_bio_c + beta_prior)
+
+      n_tot[3] <- round(m_a_bio + m_b_bio)
+      resp_bio_tot[3] <- round(m_a_bio)
+
+    } else {
+
+      # compute responders from cohort
+      suc_hist_c <- sum(res_temp[[which_cohort]]$Back$resp_hist, na.rm = TRUE)
+      N_c <- sum(res_temp[[which_cohort]]$Back$n, na.rm = TRUE)
+
+      # compute historical responders
+      suc_hist_h <- sum(sapply(res_temp, function(x) sum(x$Back$resp_hist, na.rm = TRUE)), na.rm = TRUE) - suc_hist_c
+      N_h <- sum(sapply(res_temp, function(x) sum(x$Back$n, na.rm = TRUE)), na.rm = TRUE) - N_c
+
       w1_hist <- w * beta(suc_hist_c + suc_hist_h + beta_prior, N_h + N_c - suc_hist_c - suc_hist_h + beta_prior) /
         beta(suc_hist_h + beta_prior, N_h - suc_hist_h + beta_prior)
       w2_hist <- (1 - w) * beta(suc_hist_c + beta_prior, N_c - suc_hist_c + beta_prior) / beta(beta_prior, beta_prior)
       w1n_hist <- w1_hist / (w1_hist + w2_hist)
       w2n_hist <- w2_hist / (w1_hist + w2_hist)
 
-      m_a_bio <- w1n_bio * (suc_bio_c + suc_bio_h + beta_prior) + w2n_bio * (suc_bio_c + beta_prior)
-      m_b_bio <- w1n_bio * (N_h + N_c - suc_bio_c - suc_bio_h + beta_prior) + w2n_bio * (N_c - suc_bio_c + beta_prior)
-
       m_a_hist <- w1n_hist * (suc_hist_c + suc_hist_h + beta_prior) + w2n_hist * (suc_hist_c + beta_prior)
       m_b_hist <- w1n_hist * (N_h + N_c - suc_hist_c - suc_hist_h + beta_prior) + w2n_hist * (N_c - suc_hist_c + beta_prior)
 
-      n_tot[3] <- round((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)
-      resp_bio_tot[3] <- round(m_a_bio * ((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)/(m_a_bio + m_b_bio))
-      resp_hist_tot[3] <- round(m_a_hist * ((m_a_hist + m_b_hist + m_a_bio + m_b_bio)/2)/(m_a_hist + m_b_hist))
+      n_tot[3] <- round(m_a_hist + m_b_hist)
+      resp_hist_tot[3] <- round(m_a_hist)
     }
   }
 

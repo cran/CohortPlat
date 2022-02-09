@@ -12,7 +12,7 @@ platform trials for combination treatments with binary endpoints.
 ## Installation
 
 You can install the released version of CohortPlat from
-[CRAN](https://CRAN.R-project.org) as soon as it is uploaded with:
+[CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("CohortPlat")

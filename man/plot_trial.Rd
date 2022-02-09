@@ -21,7 +21,7 @@ random <- TRUE
 rr_comb <- c(1)
 prob_comb_rr <- c(1)
 rr_mono <- c(1,2)
-prob_mono_rr <- c(0.5, 0.5)
+prob_mono_rr <- c(0.2, 0.8)
 rr_back <- c(2)
 prob_back_rr <- c(1)
 rr_plac <- c(0.10)
@@ -32,7 +32,7 @@ rr_transform <- list(
 )
 prob_rr_transform <- c(1)
 
-cohorts_max <- 7
+cohorts_max <- 20
 trial_struc <- "all_plac"
 safety_prob <- 0
 sharing_type <- "dynamic"
@@ -40,11 +40,11 @@ sr_drugs_pos <- 7
 n_int <- 100
 n_fin <- 200
 stage_data <- TRUE
-cohort_random <- 0.03
+cohort_random <- 0.02
 target_rr <- c(0,0,1)
 cohort_offset <- 0
 random_type <- "risk_ratio"
-sr_first_pos <- TRUE
+sr_first_pos <- FALSE
 
 # Vergleich Combo vs Mono
 Bayes_Sup1 <- matrix(nrow = 1, ncol = 3)

@@ -29,12 +29,12 @@
 #'
 #' random <- TRUE
 #'
-#' rr_comb <- c(0.25, 0.35, 0.4)
+#' rr_comb <- c(0.40, 0.45, 0.50)
 #' prob_comb_rr <- c(0.4, 0.4, 0.2)
-#' rr_mono <- c(0.15, 0.20, 0.25)
+#' rr_mono <- c(0.20, 0.25, 0.30)
 #' prob_mono_rr <- c(0.2, 0.4, 0.4)
 #' rr_back <- c(0.20, 0.25, 0.30)
-#' prob_back_rr <- c(0.3, 0.4, 0.3)
+#' prob_back_rr <- c(0.2, 0.4, 0.4)
 #' rr_plac <- c(0.10, 0.12, 0.14)
 #' prob_plac_rr <- c(0.25, 0.5, 0.25)
 #'
@@ -46,36 +46,38 @@
 #'
 #' cohorts_max <- 4
 #' safety_prob <- 0
-#' sharing_type <- "concurrent"
-#' trial_struc <- "stop_post_back"
+#' sharing_type <- "all"
+#' trial_struc <- "all_plac"
 #' sr_drugs_pos <- 4
-#' n_int <- 50
-#' n_fin <- 100
+#' n_int <- 100
+#' n_fin <- 200
 #' stage_data <- TRUE
 #' cohort_random <- 0.05
 #' target_rr <- c(0,0,1)
-#' cohort_offset <- 5
+#' cohort_offset <- 0
 #' random_type <- "absolute"
-#' sr_first_pos <- TRUE
+#' sr_first_pos <- FALSE
+#' missing_prob <- 0.1
 #'
 #' # Vergleich Combo vs Mono
 #' Bayes_Sup1 <- matrix(nrow = 3, ncol = 3)
-#' Bayes_Sup1[1,] <- c(0.00, 0.90, 1.00)
+#' Bayes_Sup1[1,] <- c(0.05, 0.90, 1.00)
 #' Bayes_Sup1[2,] <- c(0.05, 0.65, 1.00)
 #' Bayes_Sup1[3,] <- c(0.10, 0.50, 1.00)
 #' # Vergleich Combo vs Backbone
 #' Bayes_Sup2 <- matrix(nrow = 3, ncol = 3)
-#' Bayes_Sup2[1,] <- c(0.05, 0.80, 1.00)
+#' Bayes_Sup2[1,] <- c(0.05, 0.90, 1.00)
 #' Bayes_Sup2[2,] <- c(NA, NA, NA)
 #' Bayes_Sup2[3,] <- c(NA, NA, NA)
 #' # Vergleich Mono vs Placebo
 #' Bayes_Sup3 <- matrix(nrow = 3, ncol = 3)
 #' Bayes_Sup3[1,] <- c(0.00, 0.90, 1.00)
-#' Bayes_Sup3[2,] <- c(0.05, 0.65, 1.00)
+#' Bayes_Sup3[2,] <- c(NA, NA, NA)
 #' Bayes_Sup3[3,] <- c(NA, NA, NA)
+#' # Vergleich Back vs Placebo
 #' Bayes_Sup4 <- matrix(nrow = 3, ncol = 3)
 #' Bayes_Sup4[1,] <- c(0.00, 0.90, 1.00)
-#' Bayes_Sup4[2,] <- c(0.05, 0.65, 1.00)
+#' Bayes_Sup4[2,] <- c(NA, NA, NA)
 #' Bayes_Sup4[3,] <- c(NA, NA, NA)
 #' Bayes_Sup <- list(list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4),
 #'              list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
@@ -89,8 +91,8 @@
 #' sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, sharing_type = sharing_type,
 #' sr_first_pos = sr_first_pos, safety_prob = safety_prob, Bayes_Sup = Bayes_Sup,
 #' prob_rr_transform = prob_rr_transform, cohort_offset = cohort_offset,
-#' trial_struc = trial_struc, iter = 50, coresnum = 1, save = FALSE,
-#' ret_list = TRUE, plot_ocs = TRUE
+#' trial_struc = trial_struc, missing_prob = missing_prob,
+#' iter = 10, coresnum = 1, save = FALSE, ret_list = TRUE, plot_ocs = TRUE
 #' )
 #'
 #' ocs[[3]]

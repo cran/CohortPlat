@@ -246,7 +246,7 @@ cohorts_max <- 5
 
 # With what probability should a new cohort be added for every patient?
 cohort_random <- 0.02
-
+cohort_fixed  <- NULL
 
 # Set simulation rules ----------
 
@@ -297,7 +297,7 @@ run1 <- simulate_trial(
   prob_plac_rr = prob_plac_rr, stage_data = stage_data, cohort_random = cohort_random, 
   cohorts_max = cohorts_max, sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, 
   sharing_type = sharing_type, safety_prob = safety_prob, Bayes_Sup = Bayes_Sup,
-  Bayes_Fut = Bayes_Fut, prob_rr_transform = prob_rr_transform
+  Bayes_Fut = Bayes_Fut, prob_rr_transform = prob_rr_transform, cohort_fixed = cohort_fixed
 )
 
 ## ---- cache = TRUE, fig.width = 8, fig.height = 10, message = FALSE-----------
@@ -355,6 +355,7 @@ cohorts_max <- 5
 
 # With what probability should a new cohort be added at every timestamp?
 cohort_random <- 0.03
+cohort_fixed  <- NULL
 
 # What is the minimum number of iterations between the addition of new cohort?
 cohort_offset <- 20
@@ -408,7 +409,8 @@ run2 <- simulate_trial(
   prob_plac_rr = prob_plac_rr, stage_data = stage_data, cohort_random = cohort_random, 
   cohorts_max = cohorts_max, sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, 
   sharing_type = sharing_type, safety_prob = safety_prob, P_Sup = P_Sup, 
-  prob_rr_transform = prob_rr_transform, cohort_offset = cohort_offset
+  prob_rr_transform = prob_rr_transform, cohort_offset = cohort_offset, 
+  cohort_fixed = cohort_fixed
 )
 
 ## ---- cache = TRUE, fig.width = 8, fig.height = 10, message = FALSE-----------
@@ -488,7 +490,7 @@ cohorts_max <- 5
 
 # With what probability should a new cohort be added for every patient?
 cohort_random <- 0.02
-
+cohort_fixed  <- NULL
 
 # Set simulation rules ----------
 
@@ -556,7 +558,7 @@ set.seed(50)
   prob_plac_rr = prob_plac_rr, stage_data = stage_data, cohort_random = cohort_random, 
   cohorts_max = cohorts_max, sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, 
   sharing_type = sharing_type, safety_prob = safety_prob, Bayes_Sup = Bayes_Sup,
-  Bayes_Fut = Bayes_Fut, prob_rr_transform = prob_rr_transform,
+  Bayes_Fut = Bayes_Fut, prob_rr_transform = prob_rr_transform, cohort_fixed = cohort_fixed,
   ret_trials = ret_trials, iter = iter, coresnum = coresnum, save = FALSE, path = path, 
   filename = filename, ret_list = ret_list, plot_ocs = plot_ocs
  )
@@ -615,6 +617,7 @@ cohorts_max <- 5
 
 # With what probability should a new cohort be added at every timestamp?
 cohort_random <- 0.03
+cohort_fixed <- NULL
 
 # What is the minimum number of iterations between the addition of new cohort?
 cohort_offset <- 20
@@ -684,7 +687,7 @@ plot_ocs <- TRUE
 #   random_type = random_type, prob_mono_rr = prob_mono_rr, prob_back_rr = prob_back_rr,
 #   prob_plac_rr = prob_plac_rr, stage_data = stage_data, cohort_random = cohort_random, 
 #   cohorts_max = cohorts_max, sr_drugs_pos = sr_drugs_pos, target_rr = target_rr, 
-#   sharing_type = sharing_type, safety_prob = safety_prob, P_Sup = P_Sup, 
+#   sharing_type = sharing_type, safety_prob = safety_prob, P_Sup = P_Sup, cohort_fixed = cohort_fixed,
 #   prob_rr_transform = prob_rr_transform, cohort_offset = cohort_offset, ret_trials = ret_trials,
 #   iter = iter, coresnum = coresnum, save = save, path = path, filename = filename, ret_list = ret_list,
 #   plot_ocs = plot_ocs

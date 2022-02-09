@@ -124,13 +124,16 @@ Bayes_Sup <- list(list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4),
                   list(Bayes_Sup1, Bayes_Sup2, Bayes_Sup3, Bayes_Sup4))
 
 sharing_type <- "all"
-interim <- FALSE
+interim <- TRUE
 which_cohort <- 1
+missing_prob <- 0.5
+seed_missing <- 100
 
 make_decision_trial(
 res_list = res_list, which_cohort = which_cohort,
-interim = interim,
-Bayes_Sup = Bayes_Sup, sharing_type = sharing_type
+interim = interim, missing_prob = missing_prob,
+Bayes_Sup = Bayes_Sup, sharing_type = sharing_type,
+seed_missing = seed_missing,
 )
 
 # Multiple decision rules
